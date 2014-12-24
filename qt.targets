@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <PropertyPageSchema
+      Include="$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml" />
+    
+    <AvailableItemName Include="QtUic">
+      <Targets>_QtUicTask</Targets>
+    </AvailableItemName>
+
+    <AvailableItemName Include="QtMoc">
+      <Targets>_QtMocTask</Targets>
+    </AvailableItemName>
+
+  </ItemGroup>
+
+
+  <Target Name="MakeDirsForQtUicTask">
+    <ItemGroup Condition="'@(QtUic)' != ''">
+      <QtUicDirs Include="@(QtUic->Metadata('GeneratedFile')->'%(RootDir)%(Directory)'->Distinct())"/>
+    </ItemGroup>
+
+    <Message Text="Creating QT UIC Dirs: @(QtUicDirs)" />
+    <MakeDir Directories="@(QtUicDirs)" />
+  </Target>
+
+  <Target Name="MakeDirsForQtMocTask">
+    <ItemGroup Condition="'@(QtMoc)' != ''">
+      <QtMocDirs Include="@(QtMoc->Metadata('GeneratedFile')->'%(RootDir)%(Directory)'->Distinct())"/>
+    </ItemGroup>
+
+    <Message Text="Creating QT UIC Dirs: @(QtMocDirs)" />
+    <MakeDir Directories="@(QtMocDirs)" />
+  </Target>
+
+  <Target Name="CleanupUicFiles" DependsOnTargets="MakeDirsForQtUicTask">
+    <Delete Files="%(QtUic.GeneratedFile)" />
+  </Target>
+
+  <Target Name="CleanupMocFiles" DependsOnTargets="MakeDirsForQtMocTask">
+    <Delete Files="%(QtMoc.GeneratedFile)" />
+  </Target>
+
+  <PropertyGroup>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      CleanupUicFiles;
+      CleanupMocFiles
+    </CleanDependsOn>
+  </PropertyGroup>
+
+
+
+  <Target Name="_QtUicTask"
+          BeforeTargets="ClCompile"
+          DependsOnTargets="MakeDirsForQtUicTask" 
+          Inputs="%(QtUic.Identity)" Outputs="%(QtUic.GeneratedFile)">
+    <Message Text="QT UIC %(QtUic.Identity) -> %(QtUic.GeneratedFile)" />
+    <Exec Command="$(QT_DIR)\bin\uic.exe %(QtUic.Identity) -o %(QtUic.GeneratedFile)"/>
+  </Target>
+
+  <Target Name="_QtMocTask"
+          BeforeTargets="ClCompile"
+          DependsOnTargets="MakeDirsForQtMocTask"
+          Inputs="%(QtMoc.Identity)" Outputs="%(QtMoc.GeneratedFile)" >
+    <ItemGroup>
+      <ClCompile Include="%(QtMoc.GeneratedFile)" />
+    </ItemGroup>
+
+    <Message Text="QT MOC %(QtMoc.Identity) -> %(QtMoc.GeneratedFile)" />
+    <Exec Command="$(QT_DIR)\bin\moc.exe %(QtMoc.Identity) -o %(QtMoc.GeneratedFile)" Outputs="%(QtMoc.GeneratedFile)" />
+  </Target>
+
+</Project>
