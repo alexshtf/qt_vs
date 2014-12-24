@@ -1,10 +1,10 @@
 QT Build customizations for Visual Studio
 =========================================
-The files in this repository are useful to compile QT UI form files, and run QT Meta Object Compiler on your header files containing QObjects.
+The files in this repository are useful to compile QT UI form files, and run QT Meta Object Compiler on your header files containing `QObject`s.
 
 Usage
 =====
-First you need to put all the files in this repository on a sub-folder of your choice. Please also ensure that you have a "QT_DIR" environment variable (or user macro) that points to your QT directory.
+First you need to put all the files in this repository on a sub-folder of your choice. Please also ensure that you have a `QT_DIR` environment variable (or user macro) that points to your QT directory.
 
 Before using for the first time on a project, you need to do the following steps:
 
